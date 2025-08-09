@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title><%= title %></title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+        p.lead {
+            font-size: 1.3rem;
+            max-width: 600px;
+            margin: 0 auto 2rem auto;
+            line-height: 1.6;
+        }
+        ul.features {
+            list-style: none;
+            padding: 0;
+            max-width: 600px;
+            margin: 0 auto 2.5rem auto;
+            text-align: left;
+        }
+        ul.features li {
+            background: rgba(255, 255, 255, 0.15);
+            margin-bottom: 15px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        ul.features li::before {
+            content: '🎵';
+            font-size: 1.4rem;
+        }
+        a.btn {
+            display: inline-block;
+            background: #ff5a5f;
+            color: white;
+            padding: 14px 40px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-decoration: none;
+            box-shadow: 0 6px 15px rgba(255, 90, 95, 0.6);
+            transition: background-color 0.3s ease;
+        }
+        a.btn:hover {
+            background: #e0484f;
+        }
+        footer {
+            margin-top: auto;
+            padding: 20px;
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            ul.features li {
+                font-size: 1rem;
+            }
+            a.btn {
+                padding: 12px 28px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<main>
+    <h1>Welcome to BeatX</h1>
+    <p class="lead">
+        Your ultimate online music app with seamless streaming, personalized playlists, and more.
+    </p>
+    <ul class="features">
+        <li>Stream millions of songs anytime, anywhere</li>
+        <li>Create and manage your own playlists</li>
+        <li>Like and save your favorite tracks</li>
+        <li>Easy signup and secure login</li>
+        <li>Beautiful, intuitive interface powered by Jetpack Compose</li>
+    </ul>
+    <a href="/" class="btn">Get Started</a>
+</main>
+<footer>
+    &copy; 2025 BeatX — All rights reserved.
+</footer>
+</body>
+</html>
