@@ -6,6 +6,7 @@ import {fileURLToPath} from "url";
 import authRoutes from "./routes/authRoutes.js";
 import trackRoutes from "./routes/trackRoutes.js";
 import playlistRoutes from "./routes/playlistRoutes.js";
+import healthRoutes from "./routes/healthRoutes.js";
 
 dotenv.config();
 
@@ -20,7 +21,9 @@ app.use(express.json());
 app.get("/", (req, res) => {
     res.render("index", {title: "Welcome to BeatX"}); // looks for views/index.ejs
 });
+
 app.use("/auth", authRoutes);
+app.use("/health", healthRoutes);
 app.use("/tracks", trackRoutes);
 app.use("/playlists", playlistRoutes);
 
