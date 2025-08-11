@@ -1,10 +1,17 @@
 import express from "express";
-import { createPlaylist, getPlaylists } from "../controllers/playlistController.js";
-import { authenticate } from "../middlewares/authMiddleware.js";
+import {
+    createPlaylist,
+    getPlaylists,
+    getPlaylistTracks,
+    toggleTrackInPlaylist
+} from "../controllers/playlistController.js";
+import {authenticate} from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", authenticate, createPlaylist);
-router.get("/", authenticate, getPlaylists);
+router.post("/create", authenticate, createPlaylist);
+router.get("/get-all", authenticate, getPlaylists);
+router.get("/tracks/:playlistId", authenticate, getPlaylistTracks);
+router.post("/toggle-track", authenticate, toggleTrackInPlaylist);
 
 export default router;
