@@ -1,6 +1,6 @@
 import supabase from "../config/supabaseClient.js";
 
-const SIGNED_URL_EXPIRY = parseInt(process.env.DEFAULT_SIGNED_URL_EXPIRY) || 120;
+const SIGNED_URL_EXPIRY = parseInt(process.env.SIGNED_URL_EXPIRY) || 120;
 
 export const getTracks = async (req, res) => {
     try {
