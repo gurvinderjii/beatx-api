@@ -25,7 +25,7 @@ app.get("/", (req, res) => {
 app.use("/auth", authRoutes);
 app.use("/health", healthRoutes);
 app.use("/tracks", trackRoutes);
-app.use("/playlists", playlistRoutes);
+app.use("/playlist", playlistRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`BeatX API running on port ${PORT}`));
