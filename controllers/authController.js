@@ -131,8 +131,6 @@ export const signup = async (req, res) => {
         return res.status(200).json({
             status: 1,
             message: 'Signup successful. Please check your email to verify your account.',
-            data,
-
         })
     } catch (err) {
         console.error('Unexpected error:', err);
@@ -190,9 +188,9 @@ export const login = async (req, res) => {
 };
 
 export const refreshToken = async (req, res) => {
-    const {refresh_token} = req.body;
+    const {refreshToken} = req.body;
 
-    if (!refresh_token) {
+    if (!refreshToken) {
         return res.status(403).json({
             status: 0,
             message: "Refresh token is required"
@@ -202,7 +200,7 @@ export const refreshToken = async (req, res) => {
     try {
         const {data} = await axios.post(
             `${process.env.SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`,
-            {refresh_token},
+            {refresh_token: refreshToken},
             {
                 headers: {
                     apikey: process.env.SUPABASE_ANON_KEY,
@@ -214,9 +212,9 @@ export const refreshToken = async (req, res) => {
             status: 1,
             message: 'Token refreshed successfully.',
             data: {
-                access_token: data.access_token,
-                refresh_token: data.refresh_token,
-                expires_in: data.expires_in,
+                accessToken: data.access_token,
+                refreshToken: data.refresh_token,
+                expiresIn: data.expires_in,
             }
         })
     } catch (err) {
