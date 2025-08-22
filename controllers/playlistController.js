@@ -1,7 +1,7 @@
 import supabase from "../config/supabaseClient.js";
 
 export const getPlaylists = async (req, res) => {
-    const userId = req.user.id;
+    const userId = req.user.sub;
 
     try {
         const {data, error} = await supabase
@@ -37,7 +37,7 @@ export const getPlaylists = async (req, res) => {
 };
 
 export const getPlaylistTracks = async (req, res) => {
-    const userId = req.user.id;
+    const userId = req.user.sub;
     const {playlistId} = req.params;
 
     try {
@@ -75,7 +75,14 @@ export const getPlaylistTracks = async (req, res) => {
         });
 
         // Transform: only return the tracks object
-        const formattedData = (data || []).map(item => item.tracks);
+        const formattedData = (data || []).map(item => (
+            {
+                id: item.id,
+                createdAt: item.created_at,
+                name: item.name,
+                userId: item.user_id,
+                description: item.description,
+            }));
 
         if (formattedData.length === 0) return res.status(200).json({
             status: 0,
@@ -97,7 +104,7 @@ export const getPlaylistTracks = async (req, res) => {
 };
 
 export const createPlaylist = async (req, res) => {
-    const userId = req.user.id;
+    const userId = req.user.sub;
     const {name, description = ""} = req.body;
 
     if (!name) return res.status(400).json({
@@ -152,7 +159,7 @@ export const createPlaylist = async (req, res) => {
 };
 
 export const toggleTrackInPlaylist = async (req, res) => {
-    const userId = req.user.id;
+    const userId = req.user.sub;
     const {playlistId, trackId} = req.body;
 
     if (!playlistId || !trackId) return res.status(400).json({

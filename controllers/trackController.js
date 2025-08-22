@@ -4,32 +4,65 @@ const SIGNED_URL_EXPIRY = parseInt(process.env.SIGNED_URL_EXPIRY) || 120;
 
 export const getTracks = async (req, res) => {
     try {
-        const {data, error} = await supabase
-            .from('tracks')
-            .select('id, title, artist, album, album_art_url, duration')
-            .order('title', {ascending: true});
-
-        if (error)
+        const userId = req.user?.sub; // or req.user?.id depending on your JWT
+        if (!userId) {
             return res.status(400).json({
                 status: 0,
-                message: error.message,
+                message: "User ID not found in request",
             });
+        }
 
-        if (data == null || data.length === 0) {
+        // 1. Fetch all tracks
+        const {data: tracks, error: tracksError} = await supabase
+            .from("tracks")
+            .select("id, title, artist, album, album_art_url, duration")
+            .order("title", {ascending: true});
+
+        if (tracksError) {
+            return res.status(400).json({status: 0, message: tracksError.message});
+        }
+
+        if (!tracks || tracks.length === 0) {
             return res.status(200).json({
                 status: 0,
                 message: "No tracks found",
-                data: []
-            })
+                data: [],
+            });
         }
+
+        // 2. Fetch liked tracks for this user
+        const {data: likes, error: likesError} = await supabase
+            .from("likes")
+            .select("track_id")
+            .eq("user_id", userId);
+
+        if (likesError) {
+            return res.status(400).json({status: 0, message: likesError.message});
+        }
+
+        // 3. Build a Set of liked track IDs for quick lookup
+        const likedIds = new Set(likes?.map(like => like.track_id));
+
+        // 4. Merge isLiked flag into each track
+        const result = tracks.map(track => (
+            {
+                id: track.id,
+                title: track.title,
+                artist: track.artist,
+                album: track.album,
+                albumArtUrl: track.album_art_url,
+                duration: track.duration,
+                isLiked: likedIds.has(track.id),
+            }
+        ));
 
         return res.status(200).json({
             status: 1,
             message: "Tracks fetched successfully",
-            data: data
-        })
+            data: result,
+        });
     } catch (error) {
-        console.error('Error fetching tracks:', error.message);
+        console.error("Error fetching tracks:", error.message);
         return res.status(400).json({
             status: 0,
             message: "Failed to fetch Tracks",
@@ -38,7 +71,7 @@ export const getTracks = async (req, res) => {
 };
 
 export const toggleLikeTrack = async (req, res) => {
-    const userId = req.user.id;
+    const userId = req.user.sub;
     const {trackId} = req.body;
 
     if (!trackId) {
@@ -108,21 +141,25 @@ export const toggleLikeTrack = async (req, res) => {
 };
 
 export const getLikedTracks = async (req, res) => {
-    const userId = req.user.id;
+    const userId = req.user?.sub;
+    console.log("User in request:", req.user);
+
     try {
-        const {data, error} = await supabase
-            .from('likes')
+        const { data, error } = await supabase
+            .from("likes")
             .select(`
         track_id:tracks (
           id, title, artist, album, album_art_url, duration
         )
       `)
-            .eq('user_id', userId);
+            .eq("user_id", userId);
 
-        if (error) return res.status(400).json({
-            status: 0,
-            message: error.message,
-        })
+        if (error) {
+            return res.status(400).json({
+                status: 0,
+                message: error.message,
+            });
+        }
 
         // Extract track objects or return empty array if no likes
         const likedTracks = data?.map(item => item.track_id) || [];
@@ -130,26 +167,36 @@ export const getLikedTracks = async (req, res) => {
         if (likedTracks.length === 0) {
             return res.status(200).json({
                 status: 0,
-                message: 'No data found',
-            })
+                message: "No data found",
+                data: [],
+            });
         }
+
+        const result = likedTracks.map(track => ({
+            id: track.id,
+            title: track.title,
+            artist: track.artist,
+            album: track.album,
+            albumArtUrl: track.album_art_url,
+            duration: track.duration,
+            isLiked: true, // ✅ Always true since they come from likes table
+        }));
 
         return res.status(200).json({
             status: 1,
-            message: 'Tracks fetched successfully',
-            data: likedTracks,
-        })
+            message: "Tracks fetched successfully",
+            data: result,
+        });
     } catch (error) {
-        console.error('Error fetching liked tracks:', error.message);
+        console.error("Error fetching liked tracks:", error.message);
         return res.status(400).json({
             status: 0,
-            message: 'Failed to fetch liked tracks',
-        })
+            message: "Failed to fetch liked tracks",
+        });
     }
 };
 
 export const getTrackStream = async (req, res) => {
-    const userId = req.user?.sub || req.user?.id; // depending on how you decode token
     const {id: trackId} = req.params;
 
     if (!trackId) {
@@ -207,8 +254,8 @@ export const getTrackStream = async (req, res) => {
             message: 'Signed url created successfully',
             data: {
                 url: data.signedUrl,
-                expires_at: expiresAt,
-                expires_in: expiry
+                expiresAt: expiresAt,
+                expiresIn: expiry
             }
         });
     } catch (err) {
