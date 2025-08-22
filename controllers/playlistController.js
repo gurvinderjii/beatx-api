@@ -1,7 +1,7 @@
 import supabase from "../config/supabaseClient.js";
 
 export const getPlaylists = async (req, res) => {
-    const userId = req.user.id;
+    const userId = req.user.sub;
 
     try {
         const {data, error} = await supabase
@@ -37,7 +37,7 @@ export const getPlaylists = async (req, res) => {
 };
 
 export const getPlaylistTracks = async (req, res) => {
-    const userId = req.user.id;
+    const userId = req.user.sub;
     const {playlistId} = req.params;
 
     try {
@@ -97,7 +97,7 @@ export const getPlaylistTracks = async (req, res) => {
 };
 
 export const createPlaylist = async (req, res) => {
-    const userId = req.user.id;
+    const userId = req.user.sub;
     const {name, description = ""} = req.body;
 
     if (!name) return res.status(400).json({
@@ -152,7 +152,7 @@ export const createPlaylist = async (req, res) => {
 };
 
 export const toggleTrackInPlaylist = async (req, res) => {
-    const userId = req.user.id;
+    const userId = req.user.sub;
     const {playlistId, trackId} = req.body;
 
     if (!playlistId || !trackId) return res.status(400).json({

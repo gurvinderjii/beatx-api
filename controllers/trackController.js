@@ -38,7 +38,7 @@ export const getTracks = async (req, res) => {
 };
 
 export const toggleLikeTrack = async (req, res) => {
-    const userId = req.user.id;
+    const userId = req.user.sub;
     const {trackId} = req.body;
 
     if (!trackId) {
@@ -108,7 +108,9 @@ export const toggleLikeTrack = async (req, res) => {
 };
 
 export const getLikedTracks = async (req, res) => {
-    const userId = req.user.id;
+    const userId = req.user.sub;
+    console.log("User in request:", req.user);
+
     try {
         const {data, error} = await supabase
             .from('likes')
@@ -149,7 +151,6 @@ export const getLikedTracks = async (req, res) => {
 };
 
 export const getTrackStream = async (req, res) => {
-    const userId = req.user?.sub || req.user?.id; // depending on how you decode token
     const {id: trackId} = req.params;
 
     if (!trackId) {
