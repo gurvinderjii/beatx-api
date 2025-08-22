@@ -75,7 +75,14 @@ export const getPlaylistTracks = async (req, res) => {
         });
 
         // Transform: only return the tracks object
-        const formattedData = (data || []).map(item => item.tracks);
+        const formattedData = (data || []).map(item => (
+            {
+                id: item.id,
+                createdAt: item.created_at,
+                name: item.name,
+                userId: item.user_id,
+                description: item.description,
+            }));
 
         if (formattedData.length === 0) return res.status(200).json({
             status: 0,
